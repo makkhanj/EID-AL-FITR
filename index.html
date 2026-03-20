@@ -2,587 +2,1032 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    <meta name="theme-color" content="#0A2F1C">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Eid Mubarak</title>
-    
-    <!-- Preload critical audio for instant playback -->
-    <link rel="preload" href="eid.mp3" as="audio" type="audio/mpeg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
-    
     <style>
-        /* CSS Reset & Variables */
-        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-        :root{
-            --gold:#D4AF37;--gold-light:#F4E8C1;--gold-dark:#B8860B;
-            --green-deep:#0A2F1C;--green-rich:#1B4D3E;--green-glow:#2E7D32;
-            --black:#050505;--cream:#F5F5DC;
-            --expo:cubic-bezier(0.16,1,0.3,1);--sine:cubic-bezier(0.37,0,0.63,1);
-            --glass:rgba(255,255,255,0.03);--border:rgba(255,215,0,0.1)
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        
-        html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-        body{
-            font-family:'Inter',sans-serif;
-            background:var(--black);
-            color:var(--cream);
-            overflow-x:hidden;
-            line-height:1.6;
-            -webkit-font-smoothing:antialiased;
-            /* Performance: promote to composite layer */
-            transform:translateZ(0);
-            contain:layout style;
+
+        :root {
+            --gold: #D4AF37;
+            --gold-light: #F4E8C1;
+            --gold-dark: #B8860B;
+            --green-deep: #0A2F1C;
+            --green-rich: #1B4D3E;
+            --green-glow: #2E7D32;
+            --black: #050505;
+            --black-lighter: #0a0a0a;
+            --cream: #F5F5DC;
+            --white: #FFFFFF;
+            
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-in-out-sine: cubic-bezier(0.37, 0, 0.63, 1);
+            --ease-elastic: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 215, 0, 0.1);
+            --glass-highlight: rgba(255, 255, 255, 0.08);
         }
-        
-        /* Critical: Audio must autoplay - preload handled above */
-        audio{position:fixed;opacity:0;pointer-events:none;z-index:-1}
-        
-        /* Optimized Grain - use smaller SVG data URI */
-        .grain{
-            position:fixed;top:0;left:0;width:100%;height:100%;
-            pointer-events:none;z-index:9999;opacity:0.025;
-            background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-            /* Performance: will-change only during animation if needed */
+
+        html {
+            scroll-behavior: smooth;
         }
-        
-        /* Optimized Backgrounds */
-        .bg{
-            position:fixed;top:0;left:0;width:100%;height:100%;z-index:-3;
-            background:
-                radial-gradient(ellipse at 20% 80%,rgba(27,77,62,0.4) 0%,transparent 50%),
-                radial-gradient(ellipse at 80% 20%,rgba(212,175,55,0.15) 0%,transparent 50%),
-                linear-gradient(180deg,var(--black) 0%,var(--green-deep) 50%,var(--black) 100%);
-            will-change:transform;
-            animation:bgMove 20s var(--sine) infinite;
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--black);
+            color: var(--cream);
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
-        @keyframes bgMove{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
-        
-        .ambient{
-            position:fixed;width:100%;height:100%;z-index:-2;pointer-events:none;
-            background:radial-gradient(circle at 50% 120%,rgba(212,175,55,0.12) 0%,transparent 40%);
-            animation:pulse 8s var(--sine) infinite;
-            content-visibility:auto;
+
+        /* Cinematic Grain Texture */
+        .grain-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            will-change: transform; /* Hardware acceleration */
         }
-        @keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
-        
-        /* Optimized Particles - reduced count for mobile */
-        .particles{
-            position:fixed;width:100%;height:100%;z-index:-1;
-            overflow:hidden;pointer-events:none;contain:strict;
+
+        /* Animated Background with Depth */
+        .bg-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at 20% 80%, rgba(27, 77, 62, 0.4) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(212, 175, 55, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(27, 77, 62, 0.1) 0%, transparent 70%),
+                linear-gradient(180deg, var(--black) 0%, var(--green-deep) 50%, var(--black) 100%);
+            z-index: -3;
+            animation: bg-shift 20s var(--ease-in-out-sine) infinite;
+            will-change: transform, opacity;
         }
-        .p{
-            position:absolute;border-radius:50%;
-            will-change:transform,opacity;
-            /* Use transform instead of top/left for 60fps */
-            transform:translate3d(0,0,0);
+
+        @keyframes bg-shift {
+            0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
+            50% { transform: scale(1.1) rotate(1deg); opacity: 0.9; }
         }
-        @keyframes float{
-            0%{transform:translate3d(0,110vh,0) scale(0);opacity:0}
-            10%{opacity:1;transform:scale(1)}
-            90%{opacity:.6}
-            100%{transform:translate3d(20px,-10vh,0) scale(.5);opacity:0}
+
+        /* Ambient Glow Layer */
+        .ambient-glow {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            pointer-events: none;
+            background: 
+                radial-gradient(circle at 50% 120%, rgba(212, 175, 55, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 20% 50%, rgba(46, 125, 50, 0.1) 0%, transparent 30%);
+            animation: ambient-pulse 8s var(--ease-in-out-sine) infinite;
+            will-change: opacity;
         }
-        @keyframes twinkle{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1.2)}}
-        
-        /* Mobile: disable expensive blur effects */
-        @media (max-width:768px){
-            .particles{display:none} /* Hide on low-end */
-            .modal .sparkle{display:none}
+
+        @keyframes ambient-pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
         }
-        
-        /* Floating Icons - GPU optimized */
-        .floaters{
-            position:fixed;width:100%;height:100%;z-index:-1;
-            pointer-events:none;contain:strict;
+
+        /* Particle System */
+        .particles, .floating-icons, .lanterns {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
         }
-        .f{
-            position:absolute;font-size:1.5rem;
-            will-change:transform;
-            transform:translate3d(0,0,0);
-            filter:drop-shadow(0 0 8px rgba(212,175,55,0.3));
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            will-change: transform, opacity;
+            background: var(--gold-light);
         }
-        @keyframes f{0%,100%{transform:translate3d(0,0,0) rotate(-3deg)}50%{transform:translate3d(-5px,-20px,0) rotate(3deg)}}
-        
-        /* Hero - optimized rendering */
-        .hero{
-            min-height:100vh;display:flex;flex-direction:column;
-            justify-content:center;align-items:center;text-align:center;
-            padding:2rem;position:relative;perspective:1000px;
-            contain:layout style paint;
+
+        .particle.foreground { filter: blur(0.5px); }
+        .particle.background { filter: blur(1px); }
+
+        @keyframes float-particle-slow {
+            0% { transform: translate3d(0, 110vh, 0) scale(0); opacity: 0; }
+            10% { opacity: 1; transform: translate3d(0, 90vh, 0) scale(1); }
+            90% { opacity: 0.6; }
+            100% { transform: translate3d(20px, -10vh, 0) scale(0.5); opacity: 0; }
         }
-        .hero-c{
-            opacity:0;
-            animation:reveal 1.2s var(--expo) .2s forwards;
-            transform-style:preserve-3d;
-            will-change:transform,opacity;
+
+        /* Stars */
+        .twinkle-star {
+            position: absolute;
+            color: var(--gold-light);
+            font-size: 1rem;
+            animation: twinkle-random var(--duration) ease-in-out infinite;
+            animation-delay: var(--delay);
+            text-shadow: 0 0 10px var(--gold);
+            will-change: transform, opacity;
         }
-        @keyframes reveal{
-            from{opacity:0;transform:translateY(40px) scale(.95);filter:blur(8px)}
-            to{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}
+
+        @keyframes twinkle-random {
+            0%, 100% { opacity: 0.2; transform: scale(0.8) translateZ(0); }
+            50% { opacity: 1; transform: scale(1.3) translateZ(0); }
         }
-        
-        /* Moon - layered glow optimized */
-        .moon-w{
-            position:relative;width:200px;height:200px;margin-bottom:2rem;
-            transform-style:preserve-3d;
+
+        /* Floating Icons */
+        .floater {
+            position: absolute;
+            font-size: 1.5rem;
+            will-change: transform;
+            filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.3));
         }
-        .moon{
-            width:140px;height:140px;border-radius:50%;
-            box-shadow:inset -18px -18px 0 0 var(--gold);
-            position:absolute;top:50%;left:50%;
-            transform:translate(-50%,-50%);
-            animation:moonPulse 4s var(--sine) infinite;
-            filter:drop-shadow(0 0 20px rgba(212,175,55,0.6));
+
+        @keyframes float-physics {
+            0%, 100% { transform: translate3d(0, 0, 0) rotate(-3deg); }
+            25% { transform: translate3d(10px, -15px, 0) rotate(2deg); }
+            50% { transform: translate3d(-5px, -30px, 0) rotate(-2deg); }
+            75% { transform: translate3d(-10px, -15px, 0) rotate(3deg); }
         }
-        @keyframes moonPulse{0%,100%{filter:drop-shadow(0 0 20px rgba(212,175,55,0.6))}50%{filter:drop-shadow(0 0 30px rgba(212,175,55,0.8))}}
-        
-        .g1,.g2{
-            position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-            border-radius:50%;pointer-events:none;
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+            perspective: 1000px;
+            overflow: hidden;
         }
-        .g1{width:180px;height:180px;background:radial-gradient(circle,rgba(212,175,55,0.3) 0%,transparent 70%);filter:blur(15px)}
-        .g2{width:240px;height:240px;background:radial-gradient(circle,rgba(212,175,55,0.1) 0%,transparent 60%);filter:blur(30px)}
-        
-        /* Stars - CSS only, no JS for twinkling */
-        .stars{
-            position:absolute;width:100%;height:100%;pointer-events:none;
+
+        .hero-content {
+            opacity: 0;
+            animation: cinematic-reveal 1.4s var(--ease-out-expo) forwards;
+            animation-delay: 0.2s;
+            transform-style: preserve-3d;
         }
-        .star{
-            position:absolute;color:var(--gold-light);
-            text-shadow:0 0 10px var(--gold);
-            animation:twinkle var(--d,2s) ease-in-out infinite;
-            animation-delay:var(--del,0s);
+
+        @keyframes cinematic-reveal {
+            0% { opacity: 0; transform: translateY(60px) scale(0.9) rotateX(10deg); filter: blur(10px); }
+            100% { opacity: 1; transform: translateY(0) scale(1) rotateX(0deg); filter: blur(0); }
         }
-        
-        h1{
-            font-family:'Cinzel',serif;font-size:clamp(3rem,10vw,6rem);
-            font-weight:700;background:linear-gradient(135deg,var(--gold) 0%,var(--gold-light) 50%,var(--gold) 100%);
-            background-size:200% auto;-webkit-background-clip:text;
-            -webkit-text-fill-color:transparent;
-            animation:shimmer 5s linear infinite;
-            letter-spacing:0.1em;margin-bottom:1rem;
-            filter:drop-shadow(0 0 20px rgba(212,175,55,0.2));
+
+        /* Enhanced Moon */
+        .moon-container {
+            position: relative;
+            width: 220px;
+            height: 220px;
+            margin-bottom: 3rem;
+            transform-style: preserve-3d;
+            margin-left: auto;
+            margin-right: auto;
         }
-        @keyframes shimmer{from{background-position:200% center}to{background-position:-200% center}}
-        
-        .sub{font-family:'Inter',sans-serif;font-weight:300;font-size:clamp(1rem,3vw,1.5rem);max-width:600px;margin:0 auto;color:rgba(245,245,220,0.85);opacity:0;animation:fadeUp 1s var(--expo) .6s forwards}
-        @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-        
+
+        .crescent-moon {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            box-shadow: inset -20px -20px 0 0 var(--gold);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: moon-pulse 4s var(--ease-in-out-sine) infinite;
+        }
+
+        .moon-glow-layer {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .moon-glow-1 {
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.4) 0%, transparent 70%);
+            filter: blur(20px);
+            animation: glow-breathe 4s var(--ease-in-out-sine) infinite;
+        }
+
+        .moon-glow-2 {
+            width: 280px;
+            height: 280px;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, transparent 60%);
+            filter: blur(40px);
+            animation: glow-breathe 4s var(--ease-in-out-sine) infinite reverse;
+        }
+
+        @keyframes moon-pulse {
+            0%, 100% { filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.6)) drop-shadow(0 0 40px rgba(212, 175, 55, 0.3)); transform: translate(-50%, -50%) scale(1); }
+            50% { filter: drop-shadow(0 0 30px rgba(212, 175, 55, 0.8)) drop-shadow(0 0 60px rgba(212, 175, 55, 0.5)); transform: translate(-50%, -50%) scale(1.02); }
+        }
+
+        @keyframes glow-breathe {
+            0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+        }
+
+        .star-field {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .hero h1 {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(3.5rem, 12vw, 7rem);
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 25%, var(--gold) 50%, var(--gold-dark) 75%, var(--gold) 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmer-gradient 5s linear infinite;
+            letter-spacing: 0.15em;
+            margin-bottom: 1.5rem;
+            position: relative;
+            filter: drop-shadow(0 0 30px rgba(212, 175, 55, 0.3));
+        }
+
+        @keyframes shimmer-gradient {
+            0% { background-position: 200% center; }
+            100% { background-position: -200% center; }
+        }
+
+        .hero-subtitle {
+            font-family: 'Inter', sans-serif;
+            font-weight: 300;
+            font-size: clamp(1.1rem, 3vw, 1.75rem);
+            max-width: 650px;
+            margin: 0 auto;
+            color: rgba(245, 245, 220, 0.85);
+            line-height: 1.8;
+            letter-spacing: 0.02em;
+            opacity: 0;
+            animation: fade-up-subtle 1.2s var(--ease-out-expo) forwards;
+            animation-delay: 0.8s;
+        }
+
+        @keyframes fade-up-subtle {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         /* Lanterns */
-        .lanterns{position:absolute;width:100%;height:100%;pointer-events:none;overflow:hidden}
-        .lan{position:absolute;font-size:2rem;animation:sway 6s var(--sine) infinite;transform-origin:top center}
-        @keyframes sway{0%,100%{transform:rotate(-5deg) translateY(0)}50%{transform:rotate(5deg) translateY(-10px)}}
-        
-        /* Glass Cards - Mobile optimized */
-        .content{padding:4rem 1rem;max-width:900px;margin:0 auto;position:relative;z-index:1}
-        .card{
-            background:var(--glass);
-            backdrop-filter:blur(20px) saturate(180%);
-            -webkit-backdrop-filter:blur(20px) saturate(180%);
-            border:1px solid var(--border);border-radius:24px;
-            padding:2.5rem;margin:2rem 0;opacity:0;
-            transform:translateY(40px);transition:all .6s var(--expo);
-            position:relative;overflow:hidden;
-            box-shadow:0 8px 32px rgba(0,0,0,0.4);
-            will-change:transform,opacity;
-            /* Performance optimization */
-            contain:layout style paint;
+        .lantern {
+            position: absolute;
+            font-size: 2.5rem;
+            filter: drop-shadow(0 0 15px rgba(255, 200, 100, 0.4));
+            animation: lantern-sway 6s var(--ease-in-out-sine) infinite;
+            transform-origin: top center;
+            will-change: transform;
         }
-        /* Mobile fallback: solid background cheaper than blur */
-        @media (max-width:768px){
-            .card{background:rgba(27,77,62,0.6);backdrop-filter:none;-webkit-backdrop-filter:none}
+
+        @keyframes lantern-sway {
+            0%, 100% { transform: rotate(-6deg) translate3d(0, 0, 0); }
+            33% { transform: rotate(4deg) translate3d(5px, -15px, 0); }
+            66% { transform: rotate(-3deg) translate3d(-3px, -8px, 0); }
         }
-        
-        .card.visible{opacity:1;transform:translateY(0)}
-        .card:hover{transform:translateY(-5px) scale(1.01);border-color:rgba(212,175,55,0.3)}
-        
-        .icon{font-size:3rem;margin-bottom:1rem;display:block}
-        .card h2{font-family:'Cinzel',serif;font-size:2rem;color:var(--gold);margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;letter-spacing:0.05em}
-        .card p{font-family:'Inter',sans-serif;font-size:1.1rem;color:rgba(245,245,220,0.8);font-weight:300}
-        
-        .btn{
-            background:linear-gradient(135deg,var(--gold),var(--gold-dark));
-            color:var(--black);border:none;padding:1rem 2.5rem;
-            font-family:'Inter',sans-serif;font-size:1rem;font-weight:500;
-            border-radius:50px;cursor:pointer;margin-top:1.5rem;
-            position:relative;overflow:hidden;
-            box-shadow:0 4px 20px rgba(212,175,55,0.3);
-            transition:transform .3s var(--expo),box-shadow .3s;
-            transform:translateZ(0);touch-action:manipulation;
+
+        /* Premium Glass Cards */
+        .content-section {
+            padding: 6rem 1.5rem;
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
         }
-        .btn:active{transform:scale(.98)}
-        .btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(212,175,55,0.5)}
-        
-        /* Modal - hardware accelerated */
-        .modal{
-            position:fixed;top:0;left:0;width:100%;height:100%;
-            background:rgba(0,0,0,0.9);
-            display:flex;justify-content:center;align-items:center;
-            z-index:1000;opacity:0;visibility:hidden;
-            transition:opacity .4s,visibility .4s;
-            backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: 32px;
+            padding: 3rem;
+            margin: 3rem 0;
+            opacity: 0;
+            transform: translateY(60px) scale(0.95);
+            transition: all 0.8s var(--ease-out-expo);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 var(--glass-highlight),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+            transform-style: preserve-3d;
+            will-change: transform, opacity;
         }
-        .modal.active{opacity:1;visibility:visible}
-        .modal-c{
-            background:linear-gradient(145deg,rgba(27,77,62,0.95),rgba(10,47,28,0.98));
-            border:1px solid rgba(212,175,55,0.3);border-radius:24px;
-            padding:3rem 2rem;text-align:center;max-width:90%;width:450px;
-            margin:1rem;transform:scale(.9);transition:transform .4s var(--expo);
-            box-shadow:0 25px 80px rgba(0,0,0,0.6);
-            position:relative;overflow:hidden;
+
+        .glass-card.visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
         }
-        .modal.active .modal-c{transform:scale(1)}
-        
-        /* Hide cursor glow on touch devices */
-        .cursor-glow{display:none}
-        @media (hover:hover) and (pointer:fine){
-            .cursor-glow{
-                display:block;position:fixed;width:300px;height:300px;
-                background:radial-gradient(circle,rgba(212,175,55,0.08) 0%,transparent 70%);
-                pointer-events:none;z-index:-1;transform:translate(-50%,-50%);
-                filter:blur(20px);will-change:transform;transition:opacity .3s;
-            }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg, 
+                transparent 30%, 
+                rgba(255, 215, 0, 0.03) 50%, 
+                transparent 70%
+            );
+            transform: rotate(45deg) translateX(-100%);
+            transition: transform 0.6s var(--ease-out-expo);
         }
-        
-        .close{position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,0.1);border:1px solid rgba(212,175,55,0.2);color:var(--cream);width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;transition:all .3s}
-        .close:hover{background:rgba(212,175,55,0.2);transform:rotate(90deg)}
-        
-        .modal h3{font-family:'Cinzel',serif;font-size:2rem;color:var(--gold);margin-bottom:1rem}
-        .modal p{font-family:'Inter',sans-serif;font-size:1.1rem;line-height:1.8;color:var(--cream)}
-        .ar{font-family:'Amiri',serif;font-size:1.5rem;color:var(--green-glow);text-shadow:0 0 10px rgba(46,125,50,0.5);margin:0 .2rem}
-        
+
+        .glass-card:hover::before {
+            transform: rotate(45deg) translateX(100%);
+        }
+
+        .glass-card:hover {
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.5),
+                0 0 40px rgba(212, 175, 55, 0.1),
+                inset 0 1px 0 var(--glass-highlight);
+            border-color: rgba(212, 175, 55, 0.2);
+        }
+
+        .card-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            display: block;
+            filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.3));
+            transform: translateZ(20px);
+        }
+
+        .glass-card h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 2.25rem;
+            font-weight: 600;
+            color: var(--gold);
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            letter-spacing: 0.05em;
+            transform: translateZ(30px);
+        }
+
+        .glass-card p {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.15rem;
+            line-height: 1.9;
+            color: rgba(245, 245, 220, 0.8);
+            font-weight: 300;
+            transform: translateZ(10px);
+        }
+
+        .glass-card.visible .card-icon { animation: pop-in 0.6s var(--ease-elastic) backwards; animation-delay: 0.1s; }
+        .glass-card.visible h2 { animation: slide-right 0.6s var(--ease-out-expo) backwards; animation-delay: 0.2s; }
+        .glass-card.visible p { animation: fade-up 0.6s var(--ease-out-expo) backwards; animation-delay: 0.3s; }
+
+        @keyframes pop-in {
+            from { transform: scale(0) rotate(-180deg); opacity: 0; }
+            to { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        @keyframes slide-right {
+            from { transform: translateX(-30px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes fade-up {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Premium Button */
+        .surprise-btn {
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+            color: var(--black);
+            border: none;
+            padding: 1.25rem 3rem;
+            font-size: 1.1rem;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 2rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                0 4px 20px rgba(212, 175, 55, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            transition: all 0.4s var(--ease-out-expo);
+            transform-style: preserve-3d;
+        }
+
+        .surprise-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: left 0.6s var(--ease-out-expo);
+        }
+
+        .surprise-btn:hover {
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 
+                0 12px 40px rgba(212, 175, 55, 0.5),
+                0 0 60px rgba(212, 175, 55, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4);
+        }
+
+        .surprise-btn:hover::before { left: 100%; }
+        .surprise-btn:active { transform: translateY(-2px) scale(1.02); }
+
+        /* Magical Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(20px) saturate(180%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.5s var(--ease-out-expo);
+            perspective: 1000px;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: linear-gradient(145deg, rgba(27, 77, 62, 0.95), rgba(10, 47, 28, 0.98));
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 32px;
+            padding: 4rem 3rem;
+            text-align: center;
+            max-width: 500px;
+            margin: 1.5rem;
+            transform: scale(0.8) rotateX(15deg);
+            transition: all 0.6s var(--ease-elastic);
+            position: relative;
+            box-shadow: 
+                0 25px 80px rgba(0, 0, 0, 0.6),
+                0 0 0 1px rgba(212, 175, 55, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1) rotateX(0deg);
+            animation: modal-aura 4s var(--ease-in-out-sine) infinite;
+        }
+
+        @keyframes modal-aura {
+            0%, 100% { box-shadow: 0 25px 80px rgba(0, 0, 0, 0.6), 0 0 60px rgba(212, 175, 55, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1); }
+            50% { box-shadow: 0 30px 90px rgba(0, 0, 0, 0.7), 0 0 80px rgba(212, 175, 55, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15); }
+        }
+
+        .modal-sparkles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            overflow: hidden;
+            border-radius: 32px;
+        }
+
+        .sparkle {
+            position: absolute;
+            color: var(--gold);
+            font-size: 1.2rem;
+            animation: sparkle-float 3s ease-in-out infinite;
+            opacity: 0;
+        }
+
+        @keyframes sparkle-float {
+            0%, 100% { transform: translateY(0) scale(0) rotate(0deg); opacity: 0; }
+            50% { transform: translateY(-40px) scale(1) rotate(180deg); opacity: 1; }
+        }
+
+        .modal-icon {
+            font-size: 5rem;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+            animation: float-gentle 4s var(--ease-in-out-sine) infinite;
+            filter: drop-shadow(0 0 20px rgba(212, 175, 55, 0.5));
+        }
+
+        @keyframes float-gentle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .modal-content h3 {
+            font-family: 'Cinzel', serif;
+            font-size: 2.5rem;
+            color: var(--gold);
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.1em;
+        }
+
+        .modal-content p {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.25rem;
+            line-height: 2.2;
+            color: var(--cream);
+            font-weight: 300;
+        }
+
+        .arabic-text {
+            font-family: 'Amiri', serif;
+            font-size: 1.75rem;
+            color: var(--green-glow);
+            text-shadow: 0 0 20px rgba(46, 125, 50, 0.6);
+            display: inline-block;
+            margin: 0 0.3rem;
+            vertical-align: middle;
+            animation: glow-pulse 3s var(--ease-in-out-sine) infinite;
+        }
+
+        @keyframes glow-pulse {
+            0%, 100% { text-shadow: 0 0 20px rgba(46, 125, 50, 0.6); }
+            50% { text-shadow: 0 0 30px rgba(46, 125, 50, 0.9), 0 0 50px rgba(46, 125, 50, 0.4); }
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            color: var(--cream);
+            font-size: 1.25rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s var(--ease-out-expo);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover {
+            background: rgba(212, 175, 55, 0.2);
+            border-color: var(--gold);
+            color: var(--gold);
+            transform: rotate(90deg);
+        }
+
         /* Final Section */
-        .final{text-align:center;padding:6rem 1rem}
-        .line{width:200px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:2rem auto;position:relative}
-        .line::before,.line::after{content:'✨';position:absolute;top:50%;transform:translateY(-50%);color:var(--gold)}
-        .line::before{left:-30px}.line::after{right:-30px}
-        .final p{font-family:'Cinzel',serif;font-size:clamp(1.2rem,4vw,2rem);max-width:700px;margin:0 auto;line-height:1.6}
-        .emojis{display:flex;justify-content:center;gap:2rem;margin-top:3rem;font-size:2.5rem}
-        .emojis span{animation:f 4s var(--sine) infinite}
-        .emojis span:nth-child(2){animation-delay:.5s}
-        
-        /* Scroll indicator */
-        .scroll{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);animation:b 2s infinite;opacity:0;animation-delay:1.5s;animation-fill-mode:forwards}
-        @keyframes b{0%,100%{opacity:1;transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-10px)}}
-        .scroll::before{content:'';display:block;width:1px;height:40px;background:linear-gradient(to bottom,var(--gold),transparent);margin:0 auto}
-        
-        /* Notice */
-        .note{
-            position:fixed;bottom:1rem;right:1rem;background:var(--glass);
-            backdrop-filter:blur(10px);border:1px solid var(--border);
-            border-radius:12px;padding:.75rem 1rem;font-size:.85rem;
-            opacity:0;transform:translateY(20px);transition:all .5s;z-index:100;
+        .final-section {
+            text-align: center;
+            padding: 8rem 1.5rem;
+            position: relative;
+            overflow: hidden;
         }
-        .note.show{opacity:1;transform:translateY(0)}
-        
-        /* Reduced motion support */
-        @media (prefers-reduced-motion:reduce){
-            *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+
+        .divider {
+            width: 300px;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            margin: 3rem auto;
+            position: relative;
+            animation: divider-shine 3s var(--ease-in-out-sine) infinite;
         }
-        
-        /* Landscape mobile optimization */
-        @media (max-height:500px) and (orientation:landscape){
-            .hero{min-height:auto;padding:4rem 1rem}
-            .moon-w{transform:scale(.7);margin-bottom:1rem}
-            h1{font-size:2.5rem}
+
+        @keyframes divider-shine {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; filter: drop-shadow(0 0 10px var(--gold)); }
+        }
+
+        .divider::before, .divider::after {
+            content: '✨';
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.5rem;
+            color: var(--gold);
+            animation: twinkle-star 2s ease-in-out infinite;
+        }
+
+        .divider::before { left: -40px; }
+        .divider::after { right: -40px; animation-delay: 1s; }
+
+        .final-message {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.8;
+            color: var(--cream);
+            letter-spacing: 0.05em;
+            font-weight: 400;
+            text-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .final-emoji {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-top: 4rem;
+            font-size: 3rem;
+        }
+
+        .final-emoji span {
+            animation: float-physics 6s var(--ease-in-out-sine) infinite;
+            filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.3));
+        }
+
+        .final-emoji span:nth-child(2) { animation-delay: 0.5s; }
+        .final-emoji span:nth-child(3) { animation-delay: 1s; }
+
+        /* Cursor Glow */
+        .cursor-glow {
+            position: fixed;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.08) 0%, transparent 60%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: -1;
+            transform: translate(-50%, -50%);
+            transition: opacity 0.3s ease;
+            will-change: transform;
+            filter: blur(20px);
+        }
+
+        /* Scroll Indicator */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce-premium 2s var(--ease-in-out-sine) infinite;
+            opacity: 0;
+            animation-delay: 2s;
+            animation-fill-mode: forwards;
+        }
+
+        @keyframes bounce-premium {
+            0%, 100% { transform: translateX(-50%) translateY(0); opacity: 1; }
+            50% { transform: translateX(-50%) translateY(-15px); opacity: 0.7; }
+        }
+
+        .scroll-indicator::before {
+            content: '';
+            display: block;
+            width: 1px;
+            height: 60px;
+            background: linear-gradient(to bottom, var(--gold), transparent);
+            margin: 0 auto;
+            opacity: 0.6;
+        }
+
+        .scroll-indicator::after {
+            content: 'Scroll';
+            display: block;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            color: var(--gold);
+            margin-top: 0.5rem;
+            text-transform: uppercase;
+            opacity: 0.8;
+        }
+
+        /* Responsive Settings */
+        @media (max-width: 768px) {
+            .glass-card {
+                padding: 2rem 1.5rem;
+                margin: 2rem 0;
+                border-radius: 24px;
+                /* Disable 3D tilt on mobile for performance */
+                transform: translateY(60px); 
+            }
+            .glass-card:hover { transform: none; box-shadow: none; }
+            .glass-card h2 { font-size: 1.75rem; }
+            .moon-container { width: 180px; height: 180px; }
+            .crescent-moon { width: 120px; height: 120px; }
+            .modal-content { padding: 3rem 2rem; margin: 1rem; }
+            .modal-content h3 { font-size: 2rem; }
+            .final-emoji { gap: 2rem; font-size: 2.5rem; }
+            .cursor-glow { display: none; }
+        }
+
+        /* Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Audio: preload="auto" essential for instant playback -->
-    <audio id="a" preload="auto" loop webkit-playsinline playsinline>
+    <!-- Audio Element: Autoplay logic handled in JS without prompts -->
+    <audio id="eidAudio" loop preload="auto">
         <source src="eid.mp3" type="audio/mpeg">
     </audio>
+
+    <div class="grain-overlay"></div>
+    <div class="bg-gradient"></div>
+    <div class="ambient-glow"></div>
     
-    <div class="grain"></div>
-    <div class="bg"></div>
-    <div class="ambient"></div>
-    <div class="particles" id="p"></div>
-    <div class="floaters" id="f"></div>
-    <div class="lanterns" id="l"></div>
-    <div class="cursor-glow" id="c"></div>
-    
-    <section class="hero">
-        <div class="hero-c">
-            <div class="moon-w">
-                <div class="g2"></div><div class="g1"></div>
-                <div class="moon"></div>
-                <div class="stars" id="s"></div>
+    <!-- Dynamically populated containers -->
+    <div class="particles" id="particles"></div>
+    <div class="floating-icons" id="floaters"></div>
+    <div class="lanterns" id="lanterns"></div>
+    <div class="cursor-glow" id="cursorGlow"></div>
+
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <div class="hero-content">
+            <div class="moon-container" id="moonContainer">
+                <div class="moon-glow-layer moon-glow-2"></div>
+                <div class="moon-glow-layer moon-glow-1"></div>
+                <div class="crescent-moon"></div>
+                <div class="star-field" id="starField"></div>
             </div>
             <h1>Eid Mubarak</h1>
-            <p class="sub">May this beautiful occasion bring peace, happiness, and blessings to you and your family</p>
+            <p class="hero-subtitle">May this beautiful occasion bring peace, happiness, and blessings to you and your family</p>
         </div>
-        <div class="scroll"></div>
+        <div class="scroll-indicator"></div>
     </section>
-    
-    <section class="content">
-        <div class="card" data-i>
-            <span class="icon">🕌</span>
+
+    <!-- Content Sections -->
+    <section class="content-section">
+        <div class="glass-card" data-tilt>
+            <span class="card-icon">🕌</span>
             <h2>Eid Wishes</h2>
             <p>May Allah accept your prayers, forgive your sins, and bless you with endless joy and success.</p>
         </div>
-        <div class="card" data-i>
-            <span class="icon">🕯️</span>
+
+        <div class="glass-card" data-tilt>
+            <span class="card-icon">🕯️</span>
             <h2>Spread Happiness</h2>
             <p>Celebrate this Eid with kindness, gratitude, and love. Share smiles with everyone around you.</p>
         </div>
-        <div class="card" data-i style="text-align:center">
-            <span class="icon">🎁</span>
+
+        <div class="glass-card" data-tilt style="text-align: center;">
+            <span class="card-icon">🎁</span>
             <h2>Special Message</h2>
             <p>A surprise awaits you this blessed Eid</p>
-            <button class="btn" onclick="m(event)">Tap for Surprise 🎁</button>
+            <button class="surprise-btn" id="surpriseBtn">Reveal Surprise</button>
         </div>
     </section>
-    
-    <section class="final">
-        <div class="line"></div>
-        <p>Wishing you and your loved ones a joyful and blessed Eid</p>
-        <div class="emojis"><span>🌙</span><span>✨</span><span>⭐</span></div>
+
+    <!-- Final Section -->
+    <section class="final-section">
+        <div class="divider"></div>
+        <p class="final-message">Wishing you a joyous and blessed Eid filled with love, peace, and prosperity.</p>
+        <div class="final-emoji">
+            <span>✨</span>
+            <span>🕊️</span>
+            <span>💖</span>
+        </div>
     </section>
-    
-    <div class="modal" id="m" onclick="c(event)">
-        <div class="modal-c" onclick="event.stopPropagation()">
-            <button class="close" onclick="c()">✕</button>
-            <div style="font-size:4rem;margin-bottom:1rem">🌙✨</div>
+
+    <!-- Magical Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content">
+            <button class="close-btn" id="closeBtn">&times;</button>
+            <span class="modal-icon">🌙</span>
             <h3>Eid Mubarak!</h3>
-            <p>May your life be filled with <span class="ar">نور</span> (light), <span class="ar">رحمة</span> (mercy), and <span class="ar">بركة</span> (blessings).</p>
+            <p>May the magic of this Eid bring lots of happiness in your life and may you celebrate it with all your close friends & family. <span class="arabic-text">عيد مبارك</span></p>
+            <div class="modal-sparkles" id="modalSparkles"></div>
         </div>
     </div>
-    
-    <div class="note" id="n">🎵 Playing Eid music...</div>
-    
+
     <script>
-        /* 
-         * PERFORMANCE OPTIMIZATIONS:
-         * 1. Debounced scroll handlers using requestAnimationFrame
-         * 2. Passive event listeners for touch/scroll
-         * 3. Intersection Observer for lazy animations (paused when offscreen)
-         * 4. Reduced particle count on mobile detection
-         * 5. CSS containment for layout isolation
-         */
-        
-        const $=q=>document.querySelector(q),$$=q=>document.querySelectorAll(q);
-        const isMobile=/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        
-        // Audio Autoplay Strategy:
-        // 1. Attempt immediate play (works on desktop with autoplay policies)
-        // 2. If blocked (mobile), bind to first user interaction (touch/click)
-        // 3. Use low initial volume for soft entry
-        const audio=$('#a'),note=$('#n');
-        let played=false;
-        
-        function tryPlay(vol=0.3){
-            if(played)return;
-            audio.volume=vol;
-            audio.play().then(()=>{
-                played=true;
-                note.textContent='🎵 Eid music playing';
-                note.classList.add('show');
-                setTimeout(()=>{note.style.opacity='0';setTimeout(()=>note.remove(),500)},3000);
-            }).catch(e=>{
-                // Autoplay blocked - wait for interaction
-                note.textContent='🎵 Tap to play Eid music';
-                note.classList.add('show');
-            });
-        }
-        
-        // Try autoplay immediately
-        window.addEventListener('load',()=>tryPlay(0.2),{once:true});
-        
-        // Fallback: play on ANY user interaction (required for mobile Safari/Chrome)
-        ['click','touchstart','scroll','keydown'].forEach(ev=>{
-            document.addEventListener(ev,()=>{
-                if(!played){
-                    tryPlay(0.25);
-                    // Fade out notice
-                    if(note)note.style.opacity='0';
+        document.addEventListener('DOMContentLoaded', () => {
+            const isMobile = window.innerWidth <= 768;
+            const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            // --- 1. SEAMLESS AUDIO AUTOPLAY LOGIC ---
+            const audio = document.getElementById('eidAudio');
+            
+            // Attempt autoplay immediately
+            const attemptPlay = () => {
+                const playPromise = audio.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(() => {
+                        // Autoplay blocked by browser. Wait for first user interaction quietly.
+                        const startOnInteract = () => {
+                            audio.play();
+                            // Cleanup listeners after it plays
+                            ['click', 'touchstart', 'scroll'].forEach(evt => 
+                                document.removeEventListener(evt, startOnInteract)
+                            );
+                        };
+                        ['click', 'touchstart', 'scroll'].forEach(evt => 
+                            document.addEventListener(evt, startOnInteract, { once: true, passive: true })
+                        );
+                    });
                 }
-            },{once:true,passive:true});
-        });
-        
-        // Generate particles - reduce count on mobile for 60fps
-        function initParticles(){
-            const container=$('#p'),colors=['#D4AF37','#F4E8C1','#4CAF50'];
-            const count=isMobile?8:20; // Drastic reduction for mobile performance
-            
-            for(let i=0;i<count;i++){
-                const el=document.createElement('div');
-                el.className='p';
-                const size=Math.random()*3+2;
-                const duration=Math.random()*15+10;
-                el.style.cssText=`
-                    width:${size}px;height:${size}px;
-                    background:${colors[Math.floor(Math.random()*colors.length)]};
-                    left:${Math.random()*100}%;top:110%;
-                    animation:float ${duration}s linear ${Math.random()*10}s infinite;
-                    box-shadow:0 0 ${size*3}px currentColor;
-                `;
-                // Random twinkle effect using CSS var
-                if(Math.random()>0.7){
-                    el.style.animation+=`,twinkle ${Math.random()*3+2}s ease-in-out infinite`;
-                    el.style.animationDelay+=`,${Math.random()*5}s`;
+            };
+            // Run attempt once everything is somewhat ready
+            window.addEventListener('load', attemptPlay);
+
+            // --- 2. OPTIMIZED DOM GENERATION ---
+            if (!prefersReducedMotion) {
+                // Generate Particles
+                const particleCount = isMobile ? 15 : 35;
+                const particleFrag = document.createDocumentFragment();
+                for(let i = 0; i < particleCount; i++) {
+                    const p = document.createElement('div');
+                    p.className = `particle ${Math.random() > 0.5 ? 'foreground' : 'background'}`;
+                    const size = Math.random() * 4 + 2;
+                    p.style.width = `${size}px`;
+                    p.style.height = `${size}px`;
+                    p.style.left = `${Math.random() * 100}vw`;
+                    p.style.animation = `float-particle-slow ${Math.random() * 10 + 10}s linear infinite`;
+                    p.style.animationDelay = `${Math.random() * -20}s`;
+                    particleFrag.appendChild(p);
                 }
-                container.appendChild(el);
-            }
-        }
-        
-        // Generate stars around moon (CSS positioned, not JS animated)
-        function initStars(){
-            const container=$('#s');
-            for(let i=0;i<8;i++){
-                const el=document.createElement('span');
-                el.className='star';
-                el.textContent='✦';
-                const angle=(i/8)*Math.PI*2,radius=110;
-                const x=Math.cos(angle)*radius+100,y=Math.sin(angle)*radius+100;
-                el.style.cssText=`
-                    left:${x}px;top:${y}px;
-                    --d:${Math.random()*2+1}s;--del:${Math.random()*3}s;
-                    font-size:${Math.random()*0.5+0.8}rem;
-                `;
-                container.appendChild(el);
-            }
-        }
-        
-        // Optimized floating icons with requestAnimationFrame for smoothness
-        function initFloaters(){
-            const container=$('#f'),icons=['🌙','✨','⭐','🕌','🕯️'];
-            const count=isMobile?6:10;
-            
-            for(let i=0;i<count;i++){
-                const el=document.createElement('span');
-                el.className='f';
-                el.textContent=icons[i%icons.length];
-                el.style.cssText=`
-                    left:${Math.random()*90+5}%;top:${Math.random()*80+10}%;
-                    animation:f ${Math.random()*4+4}s var(--sine) ${Math.random()*5}s infinite;
-                    opacity:${Math.random()*0.4+0.2};
-                    font-size:${Math.random()*0.8+1.2}rem;
-                `;
-                container.appendChild(el);
-            }
-        }
-        
-        function initLanterns(){
-            const container=$('#l'),pos=[5,30,70,95];
-            pos.forEach((p,i)=>{
-                const el=document.createElement('span');
-                el.className='lan';
-                el.textContent='🕯️';
-                el.style.cssText=`left:${p}%;top:${10+(i%2)*20}%;animation-delay:${i*0.5}s`;
-                container.appendChild(el);
-            });
-        }
-        
-        // Intersection Observer for scroll reveals - pauses animations when offscreen
-        const io=new IntersectionObserver((entries)=>{
-            entries.forEach(e=>{
-                if(e.isIntersecting){
-                    e.target.classList.add('visible');
-                    // Resume animations
-                    e.target.style.animationPlayState='running';
-                }else{
-                    // Pause animations when offscreen for battery saving
-                    e.target.style.animationPlayState='paused';
+                document.getElementById('particles').appendChild(particleFrag);
+
+                // Generate Stars in Moon
+                const starCount = isMobile ? 8 : 15;
+                const starFrag = document.createDocumentFragment();
+                for(let i = 0; i < starCount; i++) {
+                    const star = document.createElement('div');
+                    star.className = 'twinkle-star';
+                    star.innerHTML = '✦';
+                    star.style.left = `${Math.random() * 100}%`;
+                    star.style.top = `${Math.random() * 100}%`;
+                    star.style.setProperty('--duration', `${Math.random() * 3 + 2}s`);
+                    star.style.setProperty('--delay', `${Math.random() * 2}s`);
+                    starFrag.appendChild(star);
                 }
+                document.getElementById('starField').appendChild(starFrag);
+
+                // Generate Floaters
+                const floaterIcons = ['✨', '🌙', '⭐', '🕌'];
+                const floaterCount = isMobile ? 4 : 8;
+                const floaterFrag = document.createDocumentFragment();
+                for(let i = 0; i < floaterCount; i++) {
+                    const floater = document.createElement('div');
+                    floater.className = 'floater';
+                    floater.innerHTML = floaterIcons[Math.floor(Math.random() * floaterIcons.length)];
+                    floater.style.left = `${Math.random() * 100}vw`;
+                    floater.style.top = `${Math.random() * 100}vh`;
+                    floater.style.fontSize = `${Math.random() * 1 + 1}rem`;
+                    floater.style.animation = `float-physics ${Math.random() * 4 + 4}s ease-in-out infinite`;
+                    floater.style.animationDelay = `${Math.random() * -5}s`;
+                    floaterFrag.appendChild(floater);
+                }
+                document.getElementById('floaters').appendChild(floaterFrag);
+
+                // Generate Lanterns
+                const lanternCount = isMobile ? 2 : 4;
+                const lanternFrag = document.createDocumentFragment();
+                for(let i = 0; i < lanternCount; i++) {
+                    const lantern = document.createElement('div');
+                    lantern.className = 'lantern';
+                    lantern.innerHTML = '🏮';
+                    lantern.style.left = `${(100 / lanternCount) * i + (Math.random() * 10)}%`;
+                    lantern.style.top = `${Math.random() * 10 - 5}%`;
+                    lantern.style.animationDelay = `${Math.random() * -4}s`;
+                    lanternFrag.appendChild(lantern);
+                }
+                document.getElementById('lanterns').appendChild(lanternFrag);
+            }
+
+            // --- 3. PERFORMANCE OBSERVER FOR SCROLL REVEAL ---
+            const cards = document.querySelectorAll('.glass-card');
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.15
+            };
+            const cardObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target); // Stop observing once revealed
+                    }
+                });
+            }, observerOptions);
+
+            cards.forEach(card => cardObserver.observe(card));
+
+            // --- 4. OPTIMIZED CURSOR & 3D TILT (Desktop Only) ---
+            if (!isMobile && !window.matchMedia("(pointer: coarse)").matches && !prefersReducedMotion) {
+                const cursorGlow = document.getElementById('cursorGlow');
+                let mouseX = window.innerWidth / 2;
+                let mouseY = window.innerHeight / 2;
+                let isMoving = false;
+
+                // Update cursor loop via requestAnimationFrame
+                const updateEffects = () => {
+                    cursorGlow.style.transform = `translate(${mouseX}px, ${mouseY}px) translate(-50%, -50%)`;
+                    isMoving = false;
+                };
+
+                document.addEventListener('mousemove', (e) => {
+                    mouseX = e.clientX;
+                    mouseY = e.clientY;
+                    
+                    if (!isMoving) {
+                        isMoving = true;
+                        requestAnimationFrame(updateEffects);
+                    }
+
+                    // 3D Tilt for cards
+                    cards.forEach(card => {
+                        const rect = card.getBoundingClientRect();
+                        const cardCenterX = rect.left + rect.width / 2;
+                        const cardCenterY = rect.top + rect.height / 2;
+                        
+                        // Check if mouse is near the card to trigger effect
+                        const distX = mouseX - cardCenterX;
+                        const distY = mouseY - cardCenterY;
+                        
+                        if(Math.abs(distX) < rect.width && Math.abs(distY) < rect.height) {
+                            const tiltX = (distY / rect.height) * -10; // Max tilt 10deg
+                            const tiltY = (distX / rect.width) * 10;
+                            card.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale3d(1.02, 1.02, 1.02)`;
+                        } else {
+                            card.style.transform = ''; // Reset
+                        }
+                    });
+                }, { passive: true });
+            }
+
+            // --- 5. MODAL LOGIC ---
+            const modalOverlay = document.getElementById('modalOverlay');
+            const surpriseBtn = document.getElementById('surpriseBtn');
+            const closeBtn = document.getElementById('closeBtn');
+
+            const openModal = () => {
+                modalOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                
+                // Add modal sparkles lazily
+                if(document.getElementById('modalSparkles').children.length === 0 && !prefersReducedMotion) {
+                    const sparkFrag = document.createDocumentFragment();
+                    for(let i=0; i<8; i++) {
+                        const sp = document.createElement('div');
+                        sp.className = 'sparkle';
+                        sp.innerHTML = '✨';
+                        sp.style.left = `${Math.random() * 100}%`;
+                        sp.style.top = `${Math.random() * 100}%`;
+                        sp.style.animationDelay = `${Math.random() * 2}s`;
+                        sparkFrag.appendChild(sp);
+                    }
+                    document.getElementById('modalSparkles').appendChild(sparkFrag);
+                }
+            };
+
+            const closeModal = () => {
+                modalOverlay.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            };
+
+            surpriseBtn.addEventListener('click', openModal);
+            closeBtn.addEventListener('click', closeModal);
+            modalOverlay.addEventListener('click', (e) => {
+                if (e.target === modalOverlay) closeModal();
             });
-        },{threshold:0.1,rootMargin:'10%'});
-        
-        $$('.card').forEach(c=>{
-            io.observe(c);
-            // Initially paused
-            c.style.animationPlayState='paused';
         });
-        
-        // Modal functions
-        function m(e){
-            const b=e.target;
-            // Ripple effect
-            const r=document.createElement('span');
-            const rect=b.getBoundingClientRect();
-            const size=Math.max(rect.width,rect.height);
-            r.style.cssText=`
-                position:absolute;border-radius:50%;
-                background:rgba(212,175,55,0.4);
-                width:${size}px;height:${size}px;
-                left:${e.clientX-rect.left-size/2}px;
-                top:${e.clientY-rect.top-size/2}px;
-                animation:ripple .6s ease-out;
-                pointer-events:none;
-            `;
-            b.style.position='relative';b.style.overflow='hidden';
-            b.appendChild(r);
-            setTimeout(()=>r.remove(),600);
-            
-            $('#m').classList.add('active');
-            document.body.style.overflow='hidden';
-        }
-        
-        function c(e){
-            if(!e||e.target.id==='m'||e.target.classList.contains('close')){
-                $('#m').classList.remove('active');
-                document.body.style.overflow='';
-            }
-        }
-        
-        // Keyboard escape to close
-        document.addEventListener('keydown',e=>{if(e.key==='Escape')c()});
-        
-        // Optimized Cursor Glow (desktop only)
-        if(!isMobile){
-            const cg=$('#c');
-            let mx=0,my=0,cx=0,cy=0,raf=null,active=false,t;
-            
-            function update(){
-                if(!active)return;
-                cx+=(mx-cx)*0.15;cy+=(my-cy)*0.15;
-                cg.style.transform=`translate(${cx}px,${cy}px) translate(-50%,-50%)`;
-                raf=requestAnimationFrame(update);
-            }
-            
-            document.addEventListener('mousemove',e=>{
-                mx=e.clientX;my=e.clientY;
-                cg.style.opacity='1';
-                if(!active){active=true;update();}
-                clearTimeout(t);
-                t=setTimeout(()=>{active=false;cancelAnimationFrame(raf);},100);
-            },{passive:true});
-            
-            document.addEventListener('mouseleave',()=>{
-                cg.style.opacity='0';active=false;cancelAnimationFrame(raf);
-            });
-        }
-        
-        // Visibility API: pause audio and animations when tab hidden (battery/performance)
-        document.addEventListener('visibilitychange',()=>{
-            if(document.hidden){
-                audio.pause();
-                document.body.style.animationPlayState='paused';
-            }else if(played){
-                audio.play().catch(()=>{});
-                document.body.style.animationPlayState='running';
-            }
-        });
-        
-        // Initialize with requestIdleCallback for non-critical elements
-        if('requestIdleCallback' in window){
-            requestIdleCallback(()=>{initParticles();initStars();initFloaters();initLanterns();});
-        }else{
-            setTimeout(()=>{initParticles();initStars();initFloaters();initLanterns();},100);
-        }
-        
-        // Preload next frame optimization
-        let ticking=false;
-        window.addEventListener('scroll',()=>{
-            if(!ticking){
-                requestAnimationFrame(()=>{
-                    // Parallax could go here if needed, currently disabled for performance
-                    ticking=false;
-                });ticking=true;
-            }
-        },{passive:true});
     </script>
 </body>
 </html>
